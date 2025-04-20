@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "wav.h"
 
@@ -56,5 +58,11 @@ struct wav_t* wav_alloc(struct wav_header_t* header, double duration_in_s) {
   memcpy(&wav->data, &data_init, sizeof(struct wav_data_t));
 
   return wav;
+}
+
+void wav_to_file(const char* path, struct wav_t* wav) {
+  int fd = open(path, O_RDWR | O_CREAT, 00664);
+  write(fd, wav, sizeof(*wav) + wav->data.chunk_size);
+  close(fd);
 }
 
