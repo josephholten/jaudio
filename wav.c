@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "wav.h"
 
@@ -39,5 +40,21 @@ struct wav_data_t* wav_data_alloc(size_t buffer_size) {
   *data = data_init;
 
   return data;
+}
+
+struct wav_t* wav_alloc(struct wav_header_t* header, double duration_in_s) {
+  struct wav_fmt_t* fmt = &header->fmt;
+  int chunk_size = duration_in_s * fmt->sample_rate * fmt->bits_per_sample / 8;
+
+  struct wav_data_t data_init = {
+    .chunk_id = "data",
+    .chunk_size = chunk_size,
+  };
+
+  struct wav_t* wav = calloc(sizeof(struct wav_t) + chunk_size, 1);
+  memcpy(&wav->header, header, sizeof(struct wav_header_t));
+  memcpy(&wav->data, &data_init, sizeof(struct wav_data_t));
+
+  return wav;
 }
 
