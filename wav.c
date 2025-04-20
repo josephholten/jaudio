@@ -5,18 +5,20 @@
 void wav_header_pcm_init(struct wav_header_t* header,
     short num_channels, int sample_rate, short bits_per_sample)
 {
+  int chunk_size;
   struct riff_header_t riff_header = {
     .chunk_id = "RIFF",
     .chunk_size = 0,
-    .format = "WAV",
+    .format = "WAVE",
   };
-  int chunk_size = sizeof(riff_header.format) + sizeof(struct wav_fmt_t) + sizeof(struct wav_data_t);
+  chunk_size = sizeof(riff_header.format) + sizeof(struct wav_fmt_t) + sizeof(struct wav_data_t);
   riff_header.chunk_size = chunk_size;
   header->riff_header = riff_header;
 
+  chunk_size = sizeof(struct wav_fmt_t) - sizeof(header->fmt.chunk_id) - sizeof(header->fmt.chunk_size);
   struct wav_fmt_t fmt = {
-    .chunk_id = "fmt",
-    .chunk_size = sizeof(struct wav_fmt_t),
+    .chunk_id = "fmt ",
+    .chunk_size = chunk_size,
     .audio_format = 1, // PCM
     .num_channels = num_channels,
     .sample_rate = sample_rate,
