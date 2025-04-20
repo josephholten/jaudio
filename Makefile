@@ -1,5 +1,10 @@
 CC = gcc
 FLAGS = -g -Wall -Werror -Wextra
 
-wav: wav.c
-	$(CC) $(FLAGS) wav.c -o wav
+all: test.out
+
+wav.o: wav.c
+	$(CC) $(FLAGS) -c wav.c
+
+test.out: test.c wav.o
+	$(CC) $(FLAGS) test.c wav.o -o test.out
