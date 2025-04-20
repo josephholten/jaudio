@@ -9,6 +9,11 @@
 #define MiB KiB * KiB
 
 short discretize(char* buf, double amplitude, short bits_per_sample) {
+  if (bits_per_sample == 8) {
+    buf[0] = 255./2 * (amplitude+1);
+    return 1;
+  }
+
   long v = amplitude * ((1<<(bits_per_sample-1))-1);
   short  bits_remaining = bits_per_sample;
   int idx = 0;
@@ -31,6 +36,11 @@ double square_wave(double t, double freq) {
     return -1;
 }
 
+double sin_wave(double t, double freq) {
+  double pi = atan(1)*4;
+  return sin(2*pi*freq*t);
+}
+
 typedef double (*wave_fptr)(double,double);
 
 void sample_wave(wave_fptr wave, double freq, struct wav_t* wav) {
@@ -47,6 +57,12 @@ void sample_wave(wave_fptr wave, double freq, struct wav_t* wav) {
   }
 }
 
+void wav_to_file(const char* path, struct wav_t* wav) {
+  int fd = open(path, O_RDWR | O_CREAT, 00664);
+  write(fd, wav, sizeof(*wav) + wav->data.chunk_size);
+  close(fd);
+}
+
 int main() {
   struct wav_header_t header;
   short num_channels = 1;
@@ -59,11 +75,12 @@ int main() {
   struct wav_t* wav = wav_alloc(&header,duration);
 
   int freq = 220; // in Hz
-  sample_wave(&square_wave, freq, wav);
 
-  const char* path = "square.wav";
-  printf("writing square wav to %s\n", path);
-  int fd = open(path, O_RDWR | O_CREAT, 00664);
-  write(fd, wav, sizeof(*wav) + wav->data.chunk_size);
-  close(fd);
+  printf("writing to square.wav, sin.wav\n");
+
+  sample_wave(&square_wave, freq, wav);
+  wav_to_file("square.wav", wav);
+
+  sample_wave(&sin_wave, freq, wav);
+  wav_to_file("sin.wav", wav);
 }
