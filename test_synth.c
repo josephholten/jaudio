@@ -8,6 +8,7 @@
 #define MiB KiB*KiB
 
 int main(int argc, char** argv) {
+  int ret = 0;
   if (argc < 3) {
     fprintf(stderr, "USAGE: %s <sample_rate> <duration> <freq>\n", argv[0]);
     return 1;
@@ -28,10 +29,19 @@ int main(int argc, char** argv) {
   printf("writing to square.wav, sin.wav\n");
 
   sample_wave(&square_wave, freq, wav);
-  wav_to_file("square.wav", wav);
+  ret = wav_to_file("square.wav", wav);
+  if (ret < 0) {
+    fprintf(stderr,"ERROR: could not write file 'square.wav'\n");
+    return 1;
+  }
 
   sample_wave(&sin_wave, freq, wav);
-  wav_to_file("sin.wav", wav);
+  ret = wav_to_file("sin.wav", wav);
+  if (ret < 0) {
+    fprintf(stderr,"ERROR: could not write file 'sin.wav'\n");
+    return 1;
+  }
 
   free(wav);
+  return 0;
 }

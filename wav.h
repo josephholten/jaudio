@@ -45,6 +45,6 @@ struct wav_data_t* wav_data_alloc(size_t buffer_size);
 
 struct wav_t* wav_alloc(struct wav_header_t* header, double duration_in_s);
 
-void wav_to_file(const char* path, struct wav_t* wav);
+int wav_to_file(const char* path, struct wav_t* wav);
 
 struct wav_t* wav_from_file(const char* path);

@@ -67,10 +67,18 @@ struct wav_t* wav_alloc(struct wav_header_t* header, double duration_in_s) {
   return wav;
 }
 
-void wav_to_file(const char* path, struct wav_t* wav) {
+int wav_to_file(const char* path, struct wav_t* wav) {
   int fd = open(path, O_WRONLY | O_CREAT, 00664);
+  if (fd < 0) {
+    fprintf(stderr, "ERROR: could not open file '%s' for writing\n", path);
+    perror(NULL);
+    return -1;
+  }
+
   write(fd, wav, sizeof(*wav) + wav->data.chunk_size);
   close(fd);
+
+  return 0;
 }
 
 int wav_header_verify(struct wav_header_t* header) {
@@ -103,7 +111,13 @@ int wav_verify(struct wav_t* wav) {
 
 struct wav_t* wav_from_file(const char* path) {
   ssize_t ret;
-  int fd = open(path, O_RDONLY | O_CREAT, 00664);
+  int fd = open(path, O_RDONLY);
+  if (fd < 0) {
+    fprintf(stderr, "ERROR: could not open file '%s' for reading\n", path);
+    perror(NULL);
+    return NULL;
+  }
+
   struct wav_header_t header;
   struct wav_t* wav = NULL;
 

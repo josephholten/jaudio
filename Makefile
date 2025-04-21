@@ -1,7 +1,7 @@
 CC = gcc
-FLAGS = -g -Wall -Werror -Wextra
+FLAGS = -g -Wall -Werror -Wextra -Lraylib/src -Iraylib/src
 
-all: test_synth.out test_empty.out wav_plot.out
+all: test_synth.out test_empty.out wav_plot.out wav_view.out
 
 util.o: util.c
 	$(CC) $(FLAGS) -c util.c
@@ -21,5 +21,8 @@ test_synth.out: test_synth.c wav.o synth.o util.o
 wav_plot.out: wav_plot.c wav.o synth.o util.o
 	$(CC) $(FLAGS) wav_plot.c wav.o synth.o util.o -o wav_plot.out -lm
 
+wav_view.out: wav_view.c wav.o synth.o util.o
+	$(CC) $(FLAGS) wav_view.c wav.o synth.o util.o -o wav_view.out -lm -lraylib
+
 clean:
-	rm *.wav *.out *.o
+	rm *.wav *.data *.gp *.out *.o
