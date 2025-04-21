@@ -2,7 +2,8 @@
 
 #include "wav.h"
 
-short discretize(char* buf, double amplitude, short bits_per_sample);
+short discretize(char* buf, double* amplitude, short bits_per_sample);
+short interpolate(char* buf, double* amplitude, short bits_per_sample);
 double square_wave(double t, double freq);
 double sin_wave(double t, double freq);
 typedef double (*wave_fptr)(double,double);

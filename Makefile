@@ -1,7 +1,10 @@
 CC = gcc
 FLAGS = -g -Wall -Werror -Wextra
 
-all: test_synth.out test_empty.out
+all: test_synth.out test_empty.out wform.out
+
+util.o: util.c
+	$(CC) $(FLAGS) -c util.c
 
 wav.o: wav.c
 	$(CC) $(FLAGS) -c wav.c
@@ -9,11 +12,14 @@ wav.o: wav.c
 synth.o: synth.c
 	$(CC) $(FLAGS) -c synth.c
 
-test_empty.out: test_empty.c wav.o
-	$(CC) $(FLAGS) test_empty.c wav.o -o test_empty.out
+test_empty.out: test_empty.c wav.o util.o
+	$(CC) $(FLAGS) test_empty.c wav.o util.o -o test_empty.out
 
-test_synth.out: test_synth.c wav.o synth.o
-	$(CC) $(FLAGS) test_synth.c wav.o synth.o -o test_synth.out -lm
+test_synth.out: test_synth.c wav.o synth.o util.o
+	$(CC) $(FLAGS) test_synth.c wav.o synth.o util.o -o test_synth.out -lm
+
+wform.out: wform.c wav.o synth.o util.o
+	$(CC) $(FLAGS) wform.c wav.o synth.o util.o -o wform.out -lm
 
 clean:
 	rm *.wav *.out *.o

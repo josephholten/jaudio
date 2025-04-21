@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define KiB 1024
 #define MiB KiB * KiB
@@ -24,4 +25,6 @@ int main() {
   int fd = open(path, O_RDWR | O_CREAT, 00664);
   write(fd, wav, sizeof(struct wav_t));
   close(fd);
+
+  free(wav);
 }

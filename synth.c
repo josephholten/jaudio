@@ -1,22 +1,44 @@
 #include <math.h>
 #include "synth.h"
 
-short discretize(char* buf, double amplitude, short bits_per_sample) {
+short discretize(char* buf, double* amplitude, short bits_per_sample) {
   if (bits_per_sample == 8) {
-    buf[0] = 255./2 * (amplitude+1);
+    *buf = 255./2 * (*amplitude+1);
     return 1;
   }
 
-  long v = amplitude * ((1<<(bits_per_sample-1))-1);
+  long peak = (1<<(bits_per_sample-1))-1;
+  long v = (*amplitude) * peak;
+
   short  bits_remaining = bits_per_sample;
-  int idx = 0;
   while (bits_remaining > 0) {
-    buf[idx] = (char)v;
-    idx++;
+    *buf = (char)v;
     buf++;
     v >>= 8;
     bits_remaining -= 8;
   }
+  return bits_per_sample / 8;
+}
+
+short interpolate(char* buf, double* amplitude, short bits_per_sample) {
+  if (bits_per_sample == 8) {
+    *amplitude = 2./255 * (*buf) - 1;
+    return 1;
+  }
+
+  long v = 0;
+
+  short bits_remaining = bits_per_sample;
+  while (bits_remaining > 0) {
+   v <<= 8;
+   v |= *buf;
+   buf++;
+   bits_remaining -= 8;
+  }
+
+  long peak = (1<<(bits_per_sample-1))-1;
+  *amplitude = v / peak;
+
   return bits_per_sample / 8;
 }
 
@@ -46,7 +68,7 @@ void sample_wave(wave_fptr wave, double freq, struct wav_t* wav) {
   for (int sample = 0; sample < num_samples; sample++) {
     double time = sample * sample_duration;
     double amplitude = wave(time,freq); // should be <= 1
-    buf += discretize(buf, amplitude, fmt->bits_per_sample);
+    buf += discretize(buf, &amplitude, fmt->bits_per_sample);
   }
 }
 
