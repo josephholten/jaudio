@@ -42,6 +42,12 @@ void rplot_line(struct rplot_param_t* p, Vector2 pt_start, Vector2 pt_end) {
   DrawLineEx(px_start,px_end,p->thick,p->color);
 }
 
+void rplot_lines(struct rplot_param_t* p, Vector2* points, int num_points) {
+  for (int i = 0; i < num_points-1; i++) {
+    rplot_line(p,points[i],points[i+1]);
+  }
+}
+
 void rplot(struct rplot_param_t* p, double* x, double* y, int num_points) {
   Vector2 last;
 
@@ -64,5 +70,16 @@ void rplot_ax(struct rplot_param_t* p) {
   Vector2 c = { .x = 0, .y = p->ymin };
   Vector2 d = { .x = 0, .y = p->ymax };
   rplot_line(p, c, d);
+}
+
+void rplot_box(struct rplot_param_t* p) {
+  Vector2 NE = { .x = p->xmin, .y = p->ymax };
+  Vector2 NW = { .x = p->xmax, .y = p->ymax };
+  Vector2 SW = { .x = p->xmax, .y = p->ymin };
+  Vector2 SE = { .x = p->xmin, .y = p->ymin };
+
+  Vector2 points[5] = {NE, NW, SW, SE, NE};
+
+  rplot_lines(p, points, 5);
 }
 

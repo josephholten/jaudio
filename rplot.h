@@ -21,4 +21,5 @@ Vector2 rplot_ax_size(struct rplot_param_t* p);
 Vector2 rplot_pt_to_px(struct rplot_param_t* p, Vector2 pt);
 void rplot(struct rplot_param_t* p, double* x, double* y, int num_points);
 void rplot_ax(struct rplot_param_t* p);
+void rplot_box(struct rplot_param_t* p);
 

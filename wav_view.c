@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
   while(!WindowShouldClose()) {
     BeginDrawing(); {
       ClearBackground(BLACK);
-      rplot_ax(&param);
+      rplot_box(&param);
       rplot(&param,t,y,num_samples);
     } EndDrawing();
   }
