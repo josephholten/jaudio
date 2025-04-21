@@ -64,6 +64,7 @@ int main(int argc, char** argv) {
     BeginDrawing(); {
       ClearBackground(BLACK);
       rplot_box(&param);
+      rplot_box_timerange(&param);
       rplot(&param,t,y,num_samples);
     } EndDrawing();
   }

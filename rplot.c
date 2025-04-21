@@ -1,4 +1,5 @@
 #include "rplot.h"
+#include <stdio.h>
 
 Rectangle rplot_ax_area(struct rplot_param_t* p) {
   Rectangle area = {
@@ -81,5 +82,23 @@ void rplot_box(struct rplot_param_t* p) {
   Vector2 points[5] = {NE, NW, SW, SE, NE};
 
   rplot_lines(p, points, 5);
+}
+
+
+void rplot_box_timerange(struct rplot_param_t* p) {
+  char buf[128];
+  Rectangle ax_area = rplot_ax_area(p);
+  int fontSize = 10;
+  Color fontColor = WHITE;
+
+  sprintf(buf,"%02d:%02.3f",(int)(p->xmin/60),fmod(p->xmin,60));
+  int x = ax_area.x;
+  int y = ax_area.y+ax_area.height;
+  DrawText(buf,x,y,fontSize,fontColor);
+
+  sprintf(buf,"%02d:%02.3f",(int)(p->xmax/60),fmod(p->xmax,60));
+  int text_len = MeasureText(buf,fontSize);
+  x += ax_area.width - text_len;
+  DrawText(buf,x,y,10,fontColor);
 }
 
