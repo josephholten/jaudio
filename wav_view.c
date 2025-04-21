@@ -9,33 +9,68 @@
 #include <stdlib.h>
 
 struct rplot_param_t {
-  Vector2 offset;
-  int width;
-  int height;
+  Rectangle area;
+  int padding;
+
   double xmax;
   double xmin;
   double ymax;
   double ymin;
+
   float thick;
   Color color;
 };
 
 
-void rplot(double* x, double* y, int num_points, struct rplot_param_t* p) {
+Rectangle rplot_ax_area(struct rplot_param_t* p) {
+  Rectangle area = {
+    .x = p->area.x + p->padding,
+    .y = p->area.y + p->padding,
+    .width = p->area.width - 2*p->padding,
+    .height = p->area.height - 2*p->padding,
+  };
+  return area;
+}
+
+Vector2 rplot_ax_offset(struct rplot_param_t* p) {
+  Vector2 off = {
+    .x = p->area.x + p->padding,
+    .y = p->area.y + p->padding,
+  };
+  return off;
+}
+
+Vector2 rplot_ax_size(struct rplot_param_t* p) {
+  Vector2 size = {
+    .x = p->area.width - 2*p->padding,
+    .y = p->area.height - 2*p->padding,
+  };
+  return size;
+}
+
+Vector2 rplot_pt_to_px(struct rplot_param_t* p, Vector2 pt) {
+  Vector2 size = rplot_ax_size(p);
+  Vector2 px = {
+      .x = (pt.x - p->xmin) / (p->xmax - p->xmin) * size.x,
+      .y = (pt.y - p->ymin) / (p->ymax - p->ymin) * size.y,
+  };
+  return px;
+}
+
+void rplot(struct rplot_param_t* p, double* x, double* y, int num_points) {
+  Vector2 ax_off = rplot_ax_offset(p);
   Vector2 last;
 
   for (int i = 0; i < num_points; i++) {
     if (x[i] < p->xmin || x[i] > p->xmax || y[i] < p->ymin || y[i] > p->ymax)
       continue;
 
-    Vector2 new = {
-      .x = (x[i] - p->xmin) / (p->xmax - p->xmin) * p->width,
-      .y = (y[i] - p->ymin) / (p->ymax - p->ymin) * p->height,
-    };
+    Vector2 pt = {x[i],y[i]};
+    Vector2 new = rplot_pt_to_px(p, pt);
 
     if (i != 0) {
-      Vector2 start = Vector2Add(last,p->offset);
-      Vector2 end   = Vector2Add(new,p->offset);
+      Vector2 start = Vector2Add(last,ax_off);
+      Vector2 end   = Vector2Add(new,ax_off);
       DrawLineEx(start,end,p->thick,p->color);
     }
 
@@ -77,25 +112,27 @@ int main(int argc, char** argv) {
 
   const int screenWidth = 800;
   const int screenHeight = 450;
+
   InitWindow(screenWidth,screenHeight, "wav_view");
   SetTargetFPS(60);
 
   struct rplot_param_t param = {
-    .offset = {0,0},
-    .width = screenWidth,
-    .height = screenHeight,
+    .area = {.x = 0, .y = 0, .width = screenWidth, .height = screenHeight},
+    .padding = 20,
+
     .xmin = 0,
     .xmax = tmax,
     .ymin = -1,
     .ymax = 1,
-    .thick = 3,
+
+    .thick = 1,
     .color = WHITE,
   };
 
   while(!WindowShouldClose()) {
     BeginDrawing(); {
       ClearBackground(BLACK);
-      rplot(t,y,num_samples,&param);
+      rplot(&param,t,y,num_samples);
     } EndDrawing();
   }
 
