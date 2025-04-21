@@ -12,9 +12,12 @@ int main(int argc, char** argv) {
   }
   char* path = argv[1];
   struct wav_t* wav = wav_from_file(path);
+  if (wav == NULL) {
+    fprintf(stderr, "ERROR: could not read file '%s' as wav file\n", path);
+    return -1;
+  }
 
   int num_samples = wav_num_samples(wav);
-  printf("num samples = %d\n", num_samples);
   double dt = 1./wav->header.fmt.sample_rate;
 
   double* t = malloc(sizeof(double)*num_samples);
@@ -29,6 +32,7 @@ int main(int argc, char** argv) {
   if (gnuplot(path, t, y, num_samples) < 0) {
     fprintf(stderr,"ERROR: could not plot");
   }
+  printf("writing gnuplot file to '%s.gp'\n",path);
 
   free(t);
   free(y);

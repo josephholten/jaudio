@@ -117,7 +117,7 @@ struct wav_t* wav_from_file(const char* path) {
 
   ret = wav_header_verify(&header);
   if (ret < 0) {
-    fprintf(stderr, "ERROR: invalid header\n");
+    fprintf(stderr, "ERROR: invalid wav header\n");
     goto end;
   }
 
