@@ -2,81 +2,12 @@
 #include "synth.h"
 #include "raylib.h"
 #include "raymath.h"
+#include "rplot.h"
 
 #include "util.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-
-struct rplot_param_t {
-  Rectangle area;
-  int padding;
-
-  double xmax;
-  double xmin;
-  double ymax;
-  double ymin;
-
-  float thick;
-  Color color;
-};
-
-
-Rectangle rplot_ax_area(struct rplot_param_t* p) {
-  Rectangle area = {
-    .x = p->area.x + p->padding,
-    .y = p->area.y + p->padding,
-    .width = p->area.width - 2*p->padding,
-    .height = p->area.height - 2*p->padding,
-  };
-  return area;
-}
-
-Vector2 rplot_ax_offset(struct rplot_param_t* p) {
-  Vector2 off = {
-    .x = p->area.x + p->padding,
-    .y = p->area.y + p->padding,
-  };
-  return off;
-}
-
-Vector2 rplot_ax_size(struct rplot_param_t* p) {
-  Vector2 size = {
-    .x = p->area.width - 2*p->padding,
-    .y = p->area.height - 2*p->padding,
-  };
-  return size;
-}
-
-Vector2 rplot_pt_to_px(struct rplot_param_t* p, Vector2 pt) {
-  Vector2 size = rplot_ax_size(p);
-  Vector2 px = {
-      .x = (pt.x - p->xmin) / (p->xmax - p->xmin) * size.x,
-      .y = (pt.y - p->ymin) / (p->ymax - p->ymin) * size.y,
-  };
-  return px;
-}
-
-void rplot(struct rplot_param_t* p, double* x, double* y, int num_points) {
-  Vector2 ax_off = rplot_ax_offset(p);
-  Vector2 last;
-
-  for (int i = 0; i < num_points; i++) {
-    if (x[i] < p->xmin || x[i] > p->xmax || y[i] < p->ymin || y[i] > p->ymax)
-      continue;
-
-    Vector2 pt = {x[i],y[i]};
-    Vector2 new = rplot_pt_to_px(p, pt);
-
-    if (i != 0) {
-      Vector2 start = Vector2Add(last,ax_off);
-      Vector2 end   = Vector2Add(new,ax_off);
-      DrawLineEx(start,end,p->thick,p->color);
-    }
-
-    last = new;
-  }
-}
 
 int main(int argc, char** argv) {
   int ret = 0;
@@ -132,6 +63,7 @@ int main(int argc, char** argv) {
   while(!WindowShouldClose()) {
     BeginDrawing(); {
       ClearBackground(BLACK);
+      rplot_ax(&param);
       rplot(&param,t,y,num_samples);
     } EndDrawing();
   }
