@@ -23,11 +23,30 @@ ssize_t rread(int fd, void* buf, size_t count, size_t max_tries) {
   return -1;
 }
 
-void gnuplot(const char* path, double* x, double* y, size_t size) {
+int gnuplot(const char* path, double* x, double* y, size_t size) {
   FILE* file;
-  file = fopen(path, "w");
+  char buf[4096];
+
+  sprintf(buf,"%s.data",path);
+  file = fopen(buf, "w");
+  if (file == NULL)
+    goto error;
   for (size_t i = 0; i < size; i++)
     fprintf(file,"%e %e\n", x[i], y[i]);
   fclose(file);
+
+  sprintf(buf,"%s.gp",path);
+  file = fopen(buf,"w");
+  if (file == NULL)
+    goto error;
+  fprintf(file,"plot '%s.data' with lines\n", path);
+  fclose(file);
+
+  return 0;
+
+error:
+  fprintf(stderr,"ERROR: could not open file '%s' for writing\n", buf);
+  perror(NULL);
+  return -1;
 }
 

@@ -26,7 +26,9 @@ int main(int argc, char** argv) {
     buf += interpolate(buf, &y[i], wav->header.fmt.bits_per_sample);
   }
 
-  gnuplot("wform.data", t, y, num_samples);
+  if (gnuplot(path, t, y, num_samples) < 0) {
+    fprintf(stderr,"ERROR: could not plot");
+  }
 
   free(t);
   free(y);

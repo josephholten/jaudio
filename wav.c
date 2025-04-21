@@ -73,6 +73,34 @@ void wav_to_file(const char* path, struct wav_t* wav) {
   close(fd);
 }
 
+int wav_header_verify(struct wav_header_t* header) {
+  if (strncmp(header->riff_header.chunk_id, "RIFF", 4) != 0) {
+    fprintf(stderr, "ERROR: no 'RIFF' header\n");
+    return -1;
+  }
+
+  if (strncmp(header->fmt.chunk_id, "fmt ", 4) != 0) {
+    fprintf(stderr, "ERROR: no 'fmt ' subchunk\n");
+    return -1;
+  }
+
+  return 0;
+}
+
+int wav_verify(struct wav_t* wav) {
+  int ret = wav_header_verify(&(wav->header));
+  if (ret < 0) {
+    return ret;
+  }
+
+  if (strncmp(wav->data.chunk_id, "data", 4) != 0) {
+    fprintf(stderr, "ERROR: no 'data' subchunk\n");
+    return -1;
+  }
+
+  return 0;
+}
+
 struct wav_t* wav_from_file(const char* path) {
   ssize_t ret;
   int fd = open(path, O_RDONLY | O_CREAT, 00664);
@@ -87,14 +115,46 @@ struct wav_t* wav_from_file(const char* path) {
     goto end;
   }
 
+  ret = wav_header_verify(&header);
+  if (ret < 0) {
+    fprintf(stderr, "ERROR: invalid header\n");
+    goto end;
+  }
+
+  // go back to start and read the whole file
+  off_t offset = 0;
+  int whence = SEEK_SET; // goto offset
+  ret = lseek(fd, offset, whence);
+  if (ret != 0) {
+    perror("ERROR: couldn't seek to start\n");
+    goto end;
+  }
+
   // allocate enough space
   int size = header.riff_header.chunk_size + 8;
   wav = calloc(size,1);
+  if (wav == NULL) {
+    perror("ERROR: could not allocate memory for wav file\n");
+    goto end;
+  }
   ret = rread(fd,wav,size,max_tries);
   if (ret < 0) {
     fprintf(stderr,"ERROR: could not read file\n");
-    goto end;
+    goto free_wav;
   }
+
+  ret = wav_verify(wav);
+  if (ret < 0) {
+    fprintf(stderr, "ERROR: invalid wav file\n");
+    goto free_wav;
+  }
+
+  // else all ok
+  goto end;
+
+free_wav:
+  free(wav);
+  wav = NULL;
 
 end:
   close(fd);

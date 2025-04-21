@@ -22,7 +22,7 @@ short discretize(char* buf, double* amplitude, short bits_per_sample) {
 
 short interpolate(char* buf, double* amplitude, short bits_per_sample) {
   if (bits_per_sample == 8) {
-    *amplitude = 2./255 * (*buf) - 1;
+    *amplitude = 2./255 * (unsigned char)(*buf) - 1;
     return 1;
   }
 
