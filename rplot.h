@@ -4,7 +4,7 @@
 
 struct rplot_param_t {
   Rectangle area;
-  int padding;
+  Vector2 padding;
 
   double xmax;
   double xmin;
@@ -23,4 +23,5 @@ void rplot(struct rplot_param_t* p, double* x, double* y, int num_points);
 void rplot_ax(struct rplot_param_t* p);
 void rplot_box(struct rplot_param_t* p);
 void rplot_box_timerange(struct rplot_param_t* p);
+void rplot_box_yrange(struct rplot_param_t* p);
 

@@ -3,32 +3,32 @@
 
 Rectangle rplot_ax_area(struct rplot_param_t* p) {
   Rectangle area = {
-    .x = p->area.x + p->padding,
-    .y = p->area.y + p->padding,
-    .width = p->area.width - 2*p->padding,
-    .height = p->area.height - 2*p->padding,
+    .x = p->area.x + p->padding.x,
+    .y = p->area.y + p->padding.y,
+    .width = p->area.width - 2*p->padding.x,
+    .height = p->area.height - 2*p->padding.y,
   };
   return area;
 }
 
 Vector2 rplot_ax_offset(struct rplot_param_t* p) {
   Vector2 off = {
-    .x = p->area.x + p->padding,
-    .y = p->area.y + p->padding,
+    .x = p->area.x + p->padding.x,
+    .y = p->area.y + p->padding.y,
   };
   return off;
 }
 
 Vector2 rplot_ax_size(struct rplot_param_t* p) {
   Vector2 size = {
-    .x = p->area.width - 2*p->padding,
-    .y = p->area.height - 2*p->padding,
+    .x = p->area.width - 2*p->padding.x,
+    .y = p->area.height - 2*p->padding.y,
   };
   return size;
 }
 
 Vector2 rplot_pt_to_px(struct rplot_param_t* p, Vector2 pt) {
-  Vector2 ax_root = {p->area.x + p->padding, p->area.y+p->area.height-p->padding};
+  Vector2 ax_root = {p->area.x + p->padding.x, p->area.y+p->area.height-p->padding.y};
   Vector2 size = rplot_ax_size(p);
   Vector2 px = {
       .x = ax_root.x + (pt.x - p->xmin) / (p->xmax - p->xmin) * size.x,
@@ -102,3 +102,22 @@ void rplot_box_timerange(struct rplot_param_t* p) {
   DrawText(buf,x,y,10,fontColor);
 }
 
+void rplot_box_yrange(struct rplot_param_t* p) {
+  char buf[128];
+  Rectangle ax_area = rplot_ax_area(p);
+  int fontSize = 10;
+  Color fontColor = WHITE;
+  int text_len, x, y;
+
+  sprintf(buf,"%.3e",p->ymax);
+  text_len = MeasureText(buf,fontSize);
+  x = ax_area.x - text_len;
+  y = ax_area.y;
+  DrawText(buf,x,y,fontSize,fontColor);
+
+  sprintf(buf,"%.3e",p->ymin);
+  text_len = MeasureText(buf,fontSize);
+  x = ax_area.x - text_len;
+  y = ax_area.y + ax_area.height - fontSize;
+  DrawText(buf,x,y,fontSize,fontColor);
+}

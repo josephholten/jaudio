@@ -41,15 +41,15 @@ int main(int argc, char** argv) {
     buf += interpolate(buf, &y[i], wav->header.fmt.bits_per_sample);
   }
 
-  const int screenWidth = 800;
-  const int screenHeight = 450;
+  const int screen_width = 800;
+  const int screen_height = 450;
 
-  InitWindow(screenWidth,screenHeight, "wav_view");
+  InitWindow(screen_width, screen_height, "wav_view");
   SetTargetFPS(60);
 
   struct rplot_param_t param = {
-    .area = {.x = 0, .y = 0, .width = screenWidth, .height = screenHeight},
-    .padding = 20,
+    .area = {.x = 0, .y = 0, .width = screen_width, .height = screen_height},
+    .padding = {20, 20},
 
     .xmin = 0,
     .xmax = tmax,
@@ -65,6 +65,7 @@ int main(int argc, char** argv) {
       ClearBackground(BLACK);
       rplot_box(&param);
       rplot_box_timerange(&param);
+      rplot_box_yrange(&param);
       rplot(&param,t,y,num_samples);
     } EndDrawing();
   }
