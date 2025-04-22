@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 
   struct rplot_param_t param = {
     .area = {.x = 0, .y = 0, .width = screen_width, .height = screen_height},
-    .padding = {20, 20},
+    .padding = {60, 20},
 
     .xmin = 0,
     .xmax = tmax,
