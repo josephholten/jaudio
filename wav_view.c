@@ -43,6 +43,7 @@ int main(int argc, char** argv) {
 
   const int screen_width = 800;
   const int screen_height = 450;
+  const double zoom_factor = 1.05;
 
   InitWindow(screen_width, screen_height, "wav_view");
   SetTargetFPS(60);
@@ -59,18 +60,29 @@ int main(int argc, char** argv) {
     .thick = 1,
     .color = WHITE,
   };
+  struct rplot_param_t* p = &param;
 
   while(!WindowShouldClose()) {
     Vector2 mouse_px = GetMousePosition();
-    Vector2 mouse_pt = rplot_px_to_pt(&param,mouse_px);
+    Vector2 mouse_pt = rplot_px_to_pt(p,mouse_px);
+
+    if (IsKeyPressed(KEY_A)) {
+      p->xmax = mouse_pt.x + (p->xmax - mouse_pt.x)/zoom_factor;
+      p->xmin = mouse_pt.x - (mouse_pt.x - p->xmin)/zoom_factor;
+    }
+
+    if (IsKeyPressed(KEY_B)) {
+      p->xmax = mouse_pt.x + (p->xmax - mouse_pt.x)*zoom_factor;
+      p->xmin = mouse_pt.x - (mouse_pt.x - p->xmin)*zoom_factor;
+    }
 
     BeginDrawing(); {
       ClearBackground(BLACK);
-      rplot_box(&param);
-      rplot_box_timerange(&param);
-      rplot_box_yrange(&param);
-      rplot_box_pos_label(&param,mouse_pt,mouse_px);
-      rplot(&param,t,y,num_samples);
+      rplot_box(p);
+      rplot_box_timerange(p);
+      rplot_box_yrange(p);
+      rplot_box_pos_label(p,mouse_pt,mouse_px);
+      rplot(p,t,y,num_samples);
     } EndDrawing();
   }
 
