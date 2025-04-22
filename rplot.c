@@ -37,6 +37,17 @@ Vector2 rplot_pt_to_px(struct rplot_param_t* p, Vector2 pt) {
   return px;
 }
 
+Vector2 rplot_px_to_pt(struct rplot_param_t* p, Vector2 px) {
+  Vector2 ax_root = {p->area.x + p->padding.x, p->area.y+p->area.height-p->padding.y};
+  Vector2 size = rplot_ax_size(p);
+
+  Vector2 pt = {
+    .x = p->xmin + (px.x - ax_root.x) / size.x * (p->xmax - p->xmin),
+    .y = p->ymin + (ax_root.y - px.y) / size.y * (p->ymax - p->ymin),
+  };
+  return pt;
+}
+
 void rplot_line(struct rplot_param_t* p, Vector2 pt_start, Vector2 pt_end) {
   Vector2 px_start = rplot_pt_to_px(p,pt_start);
   Vector2 px_end   = rplot_pt_to_px(p,pt_end);
@@ -84,7 +95,6 @@ void rplot_box(struct rplot_param_t* p) {
   rplot_lines(p, points, 5);
 }
 
-
 void rplot_box_timerange(struct rplot_param_t* p) {
   char buf[128];
   Rectangle ax_area = rplot_ax_area(p);
@@ -97,8 +107,7 @@ void rplot_box_timerange(struct rplot_param_t* p) {
   DrawText(buf,x,y,fontSize,fontColor);
 
   sprintf(buf,"%02d:%02.3f",(int)(p->xmax/60),fmod(p->xmax,60));
-  int text_len = MeasureText(buf,fontSize);
-  x += ax_area.width - text_len;
+  x += ax_area.width;
   DrawText(buf,x,y,10,fontColor);
 }
 
@@ -112,7 +121,7 @@ void rplot_box_yrange(struct rplot_param_t* p) {
   sprintf(buf,"%.3e",p->ymax);
   text_len = MeasureText(buf,fontSize);
   x = ax_area.x - text_len;
-  y = ax_area.y;
+  y = ax_area.y - fontSize;
   DrawText(buf,x,y,fontSize,fontColor);
 
   sprintf(buf,"%.3e",p->ymin);
@@ -121,3 +130,26 @@ void rplot_box_yrange(struct rplot_param_t* p) {
   y = ax_area.y + ax_area.height - fontSize;
   DrawText(buf,x,y,fontSize,fontColor);
 }
+
+void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, Vector2 px) {
+  char buf[128];
+  Rectangle ax_area = rplot_ax_area(p);
+  int fontSize = 10;
+  Color fontColor = WHITE;
+  int text_len, x, y;
+
+  // y label
+  sprintf(buf,"%.3e",pt.y);
+  text_len = MeasureText(buf,fontSize);
+  x = ax_area.x - text_len;
+  y = px.y - fontSize;
+  DrawText(buf,x,y,fontSize,fontColor);
+
+  // x label
+  sprintf(buf,"%02d:%02.3f",(int)(pt.x/60),fmod(pt.x,60));
+  text_len = MeasureText(buf,fontSize);
+  x = px.x;
+  y = ax_area.y + ax_area.height;
+  DrawText(buf,x,y,fontSize,fontColor);
+}
+

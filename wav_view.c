@@ -61,11 +61,15 @@ int main(int argc, char** argv) {
   };
 
   while(!WindowShouldClose()) {
+    Vector2 mouse_px = GetMousePosition();
+    Vector2 mouse_pt = rplot_px_to_pt(&param,mouse_px);
+
     BeginDrawing(); {
       ClearBackground(BLACK);
       rplot_box(&param);
       rplot_box_timerange(&param);
       rplot_box_yrange(&param);
+      rplot_box_pos_label(&param,mouse_pt,mouse_px);
       rplot(&param,t,y,num_samples);
     } EndDrawing();
   }
