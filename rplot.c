@@ -61,6 +61,7 @@ void rplot_lines(struct rplot_param_t* p, Vector2* points, int num_points) {
 }
 
 void rplot(struct rplot_param_t* p, double* x, double* y, int num_points) {
+  bool lastValid = false;
   Vector2 last;
 
   for (int i = 0; i < num_points; i++) {
@@ -68,9 +69,11 @@ void rplot(struct rplot_param_t* p, double* x, double* y, int num_points) {
       continue;
 
     Vector2 next = {x[i],y[i]};
-    if (i != 0)
+    if (lastValid) {
       rplot_line(p,last,next);
+    }
     last = next;
+    lastValid = true;
   }
 }
 
