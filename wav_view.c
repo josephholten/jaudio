@@ -52,28 +52,30 @@ int main(int argc, char** argv) {
     .area = {.x = 0, .y = 0, .width = screen_width, .height = screen_height},
     .padding = {60, 20},
 
-    .xmin = 0,
-    .xmax = tmax,
+    .xmin =  0,
+    .xmax =  tmax,
     .ymin = -1,
-    .ymax = 1,
+    .ymax =  1,
 
     .thick = 1,
     .color = WHITE,
   };
+
   struct rplot_param_t* p = &param;
 
   while(!WindowShouldClose()) {
     Vector2 mouse_px = GetMousePosition();
     Vector2 mouse_pt = rplot_px_to_pt(p,mouse_px);
+    float mouse_wheel = GetMouseWheelMove();
 
-    if (IsKeyPressed(KEY_A)) {
-      p->xmax = mouse_pt.x + (p->xmax - mouse_pt.x)/zoom_factor;
-      p->xmin = mouse_pt.x - (mouse_pt.x - p->xmin)/zoom_factor;
-    }
+    p->xmax = mouse_pt.x + (p->xmax - mouse_pt.x)*pow(zoom_factor,-mouse_wheel);
+    p->xmin = mouse_pt.x - (mouse_pt.x - p->xmin)*pow(zoom_factor,-mouse_wheel);
 
-    if (IsKeyPressed(KEY_B)) {
-      p->xmax = mouse_pt.x + (p->xmax - mouse_pt.x)*zoom_factor;
-      p->xmin = mouse_pt.x - (mouse_pt.x - p->xmin)*zoom_factor;
+    if (IsKeyPressed(KEY_ZERO)) {
+      p->xmin =  0;
+      p->xmax =  tmax;
+      p->ymin = -1;
+      p->ymax =  1;
     }
 
     BeginDrawing(); {
