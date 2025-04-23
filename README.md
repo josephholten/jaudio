@@ -38,4 +38,8 @@ or using raylib
     - playback using alsa
     - record using alsa
     - implement spectrogram
+      - have simple frequency chart
+      - need fast fourier transform
+      - want to zoom/pan in y axis with control
+
 - reimplement `wav_view.c` using x11 or glfw?
