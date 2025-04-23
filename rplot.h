@@ -26,3 +26,4 @@ void rplot_box(struct rplot_param_t* p);
 void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, const char* f);
 bool rplot_inside(struct rplot_param_t* p, Vector2 px);
 void rplot_zoom(struct rplot_param_t* p, double zoom_factor, Vector2 px, float wheel);
+void rplot_pan(struct rplot_param_t* p, double pan_speed, float wheel);

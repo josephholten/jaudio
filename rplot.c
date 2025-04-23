@@ -168,3 +168,10 @@ void rplot_zoom(struct rplot_param_t* p, double zoom_factor, Vector2 px, float w
 }
 
 
+void rplot_pan(struct rplot_param_t* p, double pan_speed, float wheel) {
+  if (p == NULL)
+    return;
+  double range = p->xmax - p->xmin;
+  p->xmin = p->xmin + wheel*pan_speed*range;
+  p->xmax = p->xmax + wheel*pan_speed*range;
+}

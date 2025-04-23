@@ -70,7 +70,8 @@ int main(int argc, char** argv) {
   const int screen_width = 800;
   const int screen_height = 800;
   const double zoom_factor = 1.05;
-  
+  const double pan_speed = 0.05;
+
   InitWindow(screen_width, screen_height, "wav_view");
   SetTargetFPS(60);
 
@@ -115,7 +116,7 @@ int main(int argc, char** argv) {
 
     // handle zoom/pan
     if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))
-      ;
+      rplot_pan(p,pan_speed,mouse_wheel);
     else
       rplot_zoom(p,zoom_factor,mouse_px,mouse_wheel);
 
