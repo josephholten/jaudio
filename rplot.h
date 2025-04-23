@@ -23,8 +23,6 @@ Vector2 rplot_px_to_pt(struct rplot_param_t* p, Vector2 pt);
 void rplot(struct rplot_param_t* p, double* x, double* y, int num_points);
 void rplot_ax(struct rplot_param_t* p);
 void rplot_box(struct rplot_param_t* p);
-void rplot_box_timerange(struct rplot_param_t* p);
-void rplot_box_yrange(struct rplot_param_t* p);
-void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, Vector2 px, const char* f);
+void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, const char* f);
 void rplot_inside(Rectangle r, Vector2 px);
 

@@ -124,18 +124,26 @@ int main(int argc, char** argv) {
 
       // y
       rplot_box(py);
-      rplot_box_timerange(py);
-      rplot_box_yrange(py);
+
+      Vector2 ymin = {.x = py->xmin, .y = py->ymin};
+      Vector2 ymax = {.x = py->xmax, .y = py->ymax};
       mouse_pt = rplot_px_to_pt(py,mouse_px);
-      rplot_box_pos_label(py,mouse_pt,mouse_px,"te");
+      rplot_box_pos_label(py,ymin,"te");
+      rplot_box_pos_label(py,ymax,"te");
+      rplot_box_pos_label(py,mouse_pt,"te");
+
       rplot(py,t,y,num_samples);
 
       // f
       rplot_box(pf);
-      // rplot_box_timerange(pf);
-      rplot_box_yrange(pf);
+
+      Vector2 fmin = {.x = pf->xmin, .y = pf->ymin};
+      Vector2 fmax = {.x = pf->xmax, .y = pf->ymax};
       mouse_pt = rplot_px_to_pt(pf,mouse_px);
-      rplot_box_pos_label(pf,mouse_pt,mouse_px,"ee");
+      rplot_box_pos_label(pf,mouse_pt,"ee");
+      rplot_box_pos_label(pf,fmin,"ee");
+      rplot_box_pos_label(pf,fmax,"ee");
+
       rplot(pf,f,ya,num_samples);
 
     } EndDrawing();

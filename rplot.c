@@ -98,42 +98,6 @@ void rplot_box(struct rplot_param_t* p) {
   rplot_lines(p, points, 5);
 }
 
-void rplot_box_timerange(struct rplot_param_t* p) {
-  char buf[128];
-  Rectangle ax_area = rplot_ax_area(p);
-  int fontSize = 10;
-  Color fontColor = WHITE;
-
-  sprintf(buf,"%02d:%02.3f",(int)(p->xmin/60),fmod(p->xmin,60));
-  int x = ax_area.x;
-  int y = ax_area.y+ax_area.height;
-  DrawText(buf,x,y,fontSize,fontColor);
-
-  sprintf(buf,"%02d:%02.3f",(int)(p->xmax/60),fmod(p->xmax,60));
-  x += ax_area.width;
-  DrawText(buf,x,y,10,fontColor);
-}
-
-void rplot_box_yrange(struct rplot_param_t* p) {
-  char buf[128];
-  Rectangle ax_area = rplot_ax_area(p);
-  int fontSize = 10;
-  Color fontColor = WHITE;
-  int text_len, x, y;
-
-  sprintf(buf,"%.3e",p->ymax);
-  text_len = MeasureText(buf,fontSize);
-  x = ax_area.x - text_len;
-  y = ax_area.y - fontSize;
-  DrawText(buf,x,y,fontSize,fontColor);
-
-  sprintf(buf,"%.3e",p->ymin);
-  text_len = MeasureText(buf,fontSize);
-  x = ax_area.x - text_len;
-  y = ax_area.y + ax_area.height - fontSize;
-  DrawText(buf,x,y,fontSize,fontColor);
-}
-
 static bool char_is_in(const char c, const char* set) {
   while(set) {
     if (c == *set)
@@ -156,9 +120,10 @@ void rplot_format(char* buf, char f, double val) {
   }
 }
 
-void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, Vector2 px, const char* f) {
+void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, const char* f) {
   char buf[128];
   Rectangle ax_area = rplot_ax_area(p);
+  Vector2 px = rplot_pt_to_px(p,pt);
   int fontSize = 10;
   Color fontColor = WHITE;
   int text_len, x, y;
