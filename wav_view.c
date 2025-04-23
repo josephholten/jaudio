@@ -21,6 +21,14 @@ void slow_fourier_transform(double* y, double complex* f, size_t n) {
   }
 }
 
+void rplot_zoom(struct rplot_param_t* p, double zoom_factor, Vector2 px, float wheel) {
+  if (p == NULL)
+    return;
+  Vector2 pt = rplot_px_to_pt(p,px);
+  p->xmax = pt.x + (p->xmax - pt.x)*pow(zoom_factor,-wheel);
+  p->xmin = pt.x - (pt.x - p->xmin)*pow(zoom_factor,-wheel);
+}
+
 int main(int argc, char** argv) {
   int ret = 0;
 
@@ -70,7 +78,7 @@ int main(int argc, char** argv) {
   const int screen_width = 800;
   const int screen_height = 800;
   const double zoom_factor = 1.05;
-
+  
   InitWindow(screen_width, screen_height, "wav_view");
   SetTargetFPS(60);
 
@@ -102,22 +110,22 @@ int main(int argc, char** argv) {
 
   struct rplot_param_t* py = &param_y;
   struct rplot_param_t* pf = &param_f;
+  struct rplot_param_t* p = NULL;
 
   while(!WindowShouldClose()) {
     Vector2 mouse_px = GetMousePosition();
     float mouse_wheel = GetMouseWheelMove();
 
-    if (rplot_inside(py,mouse_px)) {
-      Vector2 mouse_pt = rplot_px_to_pt(py,mouse_px);
-      py->xmax = mouse_pt.x + (py->xmax - mouse_pt.x)*pow(zoom_factor,-mouse_wheel);
-      py->xmin = mouse_pt.x - (mouse_pt.x - py->xmin)*pow(zoom_factor,-mouse_wheel);
-    }
+    if (rplot_inside(py,mouse_px))
+      p = py;
+    if (rplot_inside(pf,mouse_px))
+      p = pf;
 
-    if (rplot_inside(pf,mouse_px)) {
-      Vector2 mouse_pt = rplot_px_to_pt(pf,mouse_px);
-      pf->xmax = mouse_pt.x + (pf->xmax - mouse_pt.x)*pow(zoom_factor,-mouse_wheel);
-      pf->xmin = mouse_pt.x - (mouse_pt.x - pf->xmin)*pow(zoom_factor,-mouse_wheel);
-    }
+    // handle zoom/pan
+    if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))
+      ;
+    else
+      rplot_zoom(p,zoom_factor,mouse_px,mouse_wheel);
 
     if (IsKeyPressed(KEY_ZERO)) {
       py->xmin =  0;
