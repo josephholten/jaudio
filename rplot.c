@@ -159,3 +159,12 @@ void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, const char* f) {
   }
 }
 
+void rplot_zoom(struct rplot_param_t* p, double zoom_factor, Vector2 px, float wheel) {
+  if (p == NULL)
+    return;
+  Vector2 pt = rplot_px_to_pt(p,px);
+  p->xmax = pt.x + (p->xmax - pt.x)*pow(zoom_factor,-wheel);
+  p->xmin = pt.x - (pt.x - p->xmin)*pow(zoom_factor,-wheel);
+}
+
+
