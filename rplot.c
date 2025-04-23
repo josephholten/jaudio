@@ -134,25 +134,57 @@ void rplot_box_yrange(struct rplot_param_t* p) {
   DrawText(buf,x,y,fontSize,fontColor);
 }
 
-void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, Vector2 px) {
+static bool char_is_in(const char c, const char* set) {
+  while(set) {
+    if (c == *set)
+      return true;
+    set++;
+  }
+  return false;
+}
+
+void rplot_format(char* buf, char f, double val) {
+  switch(f) {
+    case 'e':
+      sprintf(buf,"%.3e",val);
+      break;
+    case 't':
+      sprintf(buf,"%02d:%02.3f",(int)(val/60),fmod(val,60));
+      break;
+    default:
+      break;
+  }
+}
+
+void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, Vector2 px, const char* f) {
   char buf[128];
   Rectangle ax_area = rplot_ax_area(p);
   int fontSize = 10;
   Color fontColor = WHITE;
   int text_len, x, y;
+  const char* valid = "te";
 
-  // y label
-  sprintf(buf,"%.3e",pt.y);
-  text_len = MeasureText(buf,fontSize);
-  x = ax_area.x - text_len;
-  y = px.y - fontSize;
-  DrawText(buf,x,y,fontSize,fontColor);
+  if (!char_is_in(f[0],valid) || !char_is_in(f[1],valid)) {
+    fprintf(stderr, "ERROR: invalid format specifier %s\n", f);
+    return;
+  }
 
   // x label
-  sprintf(buf,"%02d:%02.3f",(int)(pt.x/60),fmod(pt.x,60));
-  text_len = MeasureText(buf,fontSize);
-  x = px.x;
-  y = ax_area.y + ax_area.height;
-  DrawText(buf,x,y,fontSize,fontColor);
+  if (px.x >= ax_area.x && px.x <= ax_area.x + ax_area.width) {
+    rplot_format(buf, f[0], pt.x);
+    text_len = MeasureText(buf,fontSize);
+    x = px.x;
+    y = ax_area.y + ax_area.height;
+    DrawText(buf,x,y,fontSize,fontColor);
+  }
+
+  // y label
+  if (px.y >= ax_area.y && px.y <= ax_area.y + ax_area.height) {
+    rplot_format(buf, f[1], pt.y);
+    text_len = MeasureText(buf,fontSize);
+    x = ax_area.x - text_len;
+    y = px.y - fontSize;
+    DrawText(buf,x,y,fontSize,fontColor);
+  }
 }
 

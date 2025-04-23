@@ -50,3 +50,9 @@ error:
   return -1;
 }
 
+void prin2(const char* msg, const double* data, size_t size) {
+  printf("%s\n",msg);
+  for (size_t i = 0; i < size; i++) {
+    printf("  %.5e\n",data[i]);
+  }
+}
