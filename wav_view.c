@@ -105,12 +105,19 @@ int main(int argc, char** argv) {
 
   while(!WindowShouldClose()) {
     Vector2 mouse_px = GetMousePosition();
-    Vector2 mouse_pt = rplot_px_to_pt(py,mouse_px);
     float mouse_wheel = GetMouseWheelMove();
 
-    py->xmax = mouse_pt.x + (py->xmax - mouse_pt.x)*pow(zoom_factor,-mouse_wheel);
-    py->xmin = mouse_pt.x - (mouse_pt.x - py->xmin)*pow(zoom_factor,-mouse_wheel);
+    if (rplot_inside(py,mouse_px)) {
+      Vector2 mouse_pt = rplot_px_to_pt(py,mouse_px);
+      py->xmax = mouse_pt.x + (py->xmax - mouse_pt.x)*pow(zoom_factor,-mouse_wheel);
+      py->xmin = mouse_pt.x - (mouse_pt.x - py->xmin)*pow(zoom_factor,-mouse_wheel);
+    }
 
+    if (rplot_inside(pf,mouse_px)) {
+      Vector2 mouse_pt = rplot_px_to_pt(pf,mouse_px);
+      pf->xmax = mouse_pt.x + (pf->xmax - mouse_pt.x)*pow(zoom_factor,-mouse_wheel);
+      pf->xmin = mouse_pt.x - (mouse_pt.x - pf->xmin)*pow(zoom_factor,-mouse_wheel);
+    }
 
     if (IsKeyPressed(KEY_ZERO)) {
       py->xmin =  0;
@@ -127,7 +134,7 @@ int main(int argc, char** argv) {
 
       Vector2 ymin = {.x = py->xmin, .y = py->ymin};
       Vector2 ymax = {.x = py->xmax, .y = py->ymax};
-      mouse_pt = rplot_px_to_pt(py,mouse_px);
+      Vector2 mouse_pt = rplot_px_to_pt(py,mouse_px);
       rplot_box_pos_label(py,ymin,"te");
       rplot_box_pos_label(py,ymax,"te");
       rplot_box_pos_label(py,mouse_pt,"te");

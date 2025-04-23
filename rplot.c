@@ -120,6 +120,12 @@ void rplot_format(char* buf, char f, double val) {
   }
 }
 
+bool rplot_inside(struct rplot_param_t* p, Vector2 px) {
+  Rectangle ax_area = rplot_ax_area(p);
+  return px.x >= ax_area.x && px.x <= ax_area.x + ax_area.width
+    && px.y >= ax_area.y && px.y <= ax_area.y + ax_area.height;
+}
+
 void rplot_box_pos_label(struct rplot_param_t* p, Vector2 pt, const char* f) {
   char buf[128];
   Rectangle ax_area = rplot_ax_area(p);
